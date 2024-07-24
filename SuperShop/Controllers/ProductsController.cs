@@ -1,11 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SuperShop.Data;
-using SuperShop.Data.Entities;
 using SuperShop.Helpers;
 using SuperShop.Models;
-using System;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -16,14 +13,20 @@ namespace SuperShop.Controllers
     {
         private readonly IProductRepository _productRepository;
         private readonly IUserHelper _userHelper;
+        private readonly IImageHelper _imageHelper;
+        private readonly IConverterHelper _converterHelper;
 
         public ProductsController(
-            IProductRepository productRepository, 
-            IUserHelper userHelper)
+            IProductRepository productRepository,
+            IUserHelper userHelper,
+            IImageHelper imageHelper,
+            IConverterHelper converterHelper)
         {
 
             _productRepository = productRepository;
             _userHelper = userHelper;
+            _imageHelper = imageHelper;
+            _converterHelper = converterHelper;
         }
 
         // GET: Products
@@ -67,25 +70,12 @@ namespace SuperShop.Controllers
             {
                 var path = string.Empty;
 
-                if(model.ImageFile != null && model.ImageFile.Length > 0)
+                if (model.ImageFile != null && model.ImageFile.Length > 0)
                 {
-                    var guid = Guid.NewGuid().ToString();
-                    var file = $"{guid}.jpg";
-
-                    path = Path.Combine(
-                        Directory.GetCurrentDirectory(),
-                        "wwwroot\\images\\products",
-                        file);
-
-                    using(var stream = new FileStream(path, FileMode.Create))
-                    {
-                        await model.ImageFile.CopyToAsync(stream);
-                    }
-                    
-                    path = $"~/images/products/{file}";
+                    path = await _imageHelper.UploadImageAsync(model.ImageFile, "products");
                 }
 
-                var product = this.ToProduct(model, path);
+                var product = _converterHelper.ToProduct(model, path, true);
 
                 //TODO: Modificar para o user que tiver logado
                 product.User = await _userHelper.GetUserByEmailAsync("banaszeskiamanda@gmail.com");
@@ -95,21 +85,6 @@ namespace SuperShop.Controllers
             return View(model);
         }
 
-        private Product ToProduct(ProductViewModel model, string path)
-        {
-            return new Product
-            {
-                Id = model.Id,
-                Name = model.Name,
-                Price = model.Price,
-                IsAvailable = model.IsAvailable,
-                LastPurschase = model.LastPurschase,
-                LastSale = model.LastSale,
-                Stock = model.Stock,
-                User = model.User,
-                ImageUrl = path
-            };
-        }
 
         // GET: Products/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -124,25 +99,9 @@ namespace SuperShop.Controllers
                 return NotFound();
             }
 
-            var model = this.ToProductViewModel(product);
+            var model = _converterHelper.ToProductViewModel(product);
 
             return View(model);
-        }
-
-        private ProductViewModel ToProductViewModel(Product product)
-        {
-            return new ProductViewModel
-            {
-                Id = product.Id,
-                Name = product.Name,
-                Price = product.Price,
-                IsAvailable = product.IsAvailable,
-                LastPurschase = product.LastPurschase,
-                LastSale = product.LastSale,
-                Stock = product.Stock,
-                User = product.User,
-                ImageUrl = product.ImageUrl
-            };
         }
 
         // POST: Products/Edit/5
@@ -151,7 +110,7 @@ namespace SuperShop.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(ProductViewModel model)
-        {            
+        {
 
             if (ModelState.IsValid)
             {
@@ -161,23 +120,10 @@ namespace SuperShop.Controllers
 
                     if (model.ImageFile != null && model.ImageFile.Length > 0)
                     {
-                        var guid = Guid.NewGuid().ToString();
-                        var file = $"{guid}.jpg";
-
-                        path = Path.Combine(
-                        Directory.GetCurrentDirectory(),
-                        "wwwroot\\images\\products",
-                        file);
-
-                        using (var stream = new FileStream(path, FileMode.Create))
-                        {
-                            await model.ImageFile.CopyToAsync(stream);
-                        }
-
-                        path = $"~/images/products/{file}";
+                        path = await _imageHelper.UploadImageAsync(model.ImageFile, "products");
                     }
 
-                    var product = this.ToProduct(model, path);
+                    var product = _converterHelper.ToProduct(model, path, false);
 
                     //TODO: Modificar para o user que tiver logado
                     product.User = await _userHelper.GetUserByEmailAsync("banaszeskiamanda@gmail.com");
