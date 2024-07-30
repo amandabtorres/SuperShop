@@ -1,12 +1,13 @@
 ﻿using SuperShop.Data.Entities;
 using SuperShop.Models;
+using System;
 using System.IO;
 
 namespace SuperShop.Helpers
 {
     public class ConverterHelper : IConverterHelper
     {
-        public Product ToProduct(ProductViewModel model, string path, bool isNew)
+        public Product ToProduct(ProductViewModel model, Guid imageId, bool isNew)
         {
             return new Product
             {
@@ -18,7 +19,7 @@ namespace SuperShop.Helpers
                 LastSale = model.LastSale,
                 Stock = model.Stock,
                 User = model.User,
-                ImageUrl = path
+                ImageId = imageId
             };
         }
 
@@ -34,7 +35,7 @@ namespace SuperShop.Helpers
                 LastSale = product.LastSale,
                 Stock = product.Stock,
                 User = product.User,
-                ImageUrl = product.ImageUrl
+                ImageId = product.ImageId
             };
         }
     }
