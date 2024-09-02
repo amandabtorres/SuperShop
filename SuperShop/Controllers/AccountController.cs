@@ -71,6 +71,7 @@ namespace SuperShop.Controllers
                         Email = model.Username,
                         UserName = model.Username
                     };
+                    //TODO colocar como customer (final do video 19)
 
                     var result = await _userHelper.AddUserAsync(user, model.Password);
                     if(result != IdentityResult.Success)
