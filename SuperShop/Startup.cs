@@ -36,6 +36,7 @@ namespace SuperShop
                 cfg.Password.RequiredLength = 6;
 
             })
+                .AddDefaultTokenProviders()
                 .AddEntityFrameworkStores<DataContext>();
 
             services.AddAuthentication()
@@ -60,7 +61,7 @@ namespace SuperShop
             services.AddScoped<IUserHelper, UserHelper>();
             services.AddScoped<IBlobHelper, BlobHelper>();
             services.AddScoped<IConverterHelper, ConverterHelper>();
-
+            services.AddScoped<IMailHelper, MailHelper>();
 
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<IOrderRepository, OrderRepository>();
