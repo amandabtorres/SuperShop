@@ -89,12 +89,11 @@
                     Grid.Column="1"                    
                     Text="{Binding Product.Stock, StringFormat='{0:N2}'}"/>
             </Grid>
-            <Button
-                BackgroundColor="{StaticResource ColorAccent}"
+            <Button               
                 Command="{Binding AddToCartBinding}"
                 CornerRadius="10"
                 Text="{i18n:Translate AddToCart}"
-                TextColor="{StaticResource ColorFontInverse}"
+                
                 VerticalOptions="EndAndExpand" />
         </StackLayout>
     </ScrollView>
