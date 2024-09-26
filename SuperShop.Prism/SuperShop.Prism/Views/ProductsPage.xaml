@@ -7,7 +7,8 @@
              xmlns:i18n="clr-namespace:SuperShop.Prism.Helpers"
              prism:ViewModelLocator.AutowireViewModel="True"
              x:Class="SuperShop.Prism.Views.ProductsPage"
-             Title="{Binding Title}">
+             Title="{Binding Title}"
+             BackgroundColor="{StaticResource ColorBackground}">
 
     <AbsoluteLayout>
         <StackLayout Padding="5"
@@ -55,9 +56,15 @@
                                         </FormattedString>
                                     </Label.FormattedText>
                                 </Label>
-                                <Label Text="{Binding Stock, StringFormat='Stock: {0:N2}'}"
-                                       FontAttributes="Italic"
-                                       VerticalOptions="End" />
+                                <Label FontAttributes="Italic" 
+                                       VerticalOptions="End" >
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <Span Text="{i18n:Translate Stock}" />
+                                            <Span Text="{Binding Stock, StringFormat=': {0:N2}'}" />
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
                             </StackLayout>
                             <Image Grid.Column="2"
                                    Source="ic_more_vert" />
